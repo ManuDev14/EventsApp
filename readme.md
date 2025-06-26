@@ -83,7 +83,6 @@ This covers edge cases such as:
 ## 📈 Scalability Considerations
 
 - **Pagination**: Implemented via Laravel’s `paginate()` and Vue UI integration
-- **Lazy loading select fields**: Though not implemented in this version, the structure supports loading large datasets efficiently (e.g., via infinite scroll).
 - **Indexed DB structure**: `room_id`, `event_date`, and `status` fields are used in conflict detection queries and benefit from proper indexing.
 
 ---
