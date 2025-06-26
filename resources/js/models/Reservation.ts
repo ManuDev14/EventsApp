@@ -5,4 +5,5 @@ export interface Reservation {
     event_date_human: string;
     start_time: string;
     end_time: string;
+    status: string;
 }

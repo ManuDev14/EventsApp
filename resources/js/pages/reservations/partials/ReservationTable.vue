@@ -15,6 +15,7 @@ defineProps<{ reservations: { data: Reservation[]; links: any[]; total: number }
                 <TableHead>Start Time</TableHead>
                 <TableHead>End Time</TableHead>
                 <TableHead>Date</TableHead>
+                <TableHead>Status</TableHead>
             </TableRow>
         </TableHeader>
         <TableBody>
@@ -24,6 +25,7 @@ defineProps<{ reservations: { data: Reservation[]; links: any[]; total: number }
                 <TableCell>{{ reservation.start_time }}</TableCell>
                 <TableCell>{{ reservation.end_time }}</TableCell>
                 <TableCell>{{ reservation.event_date_human }}</TableCell>
+                <TableCell>{{ reservation.status }}</TableCell>
             </TableRow>
         </TableBody>
     </Table>
