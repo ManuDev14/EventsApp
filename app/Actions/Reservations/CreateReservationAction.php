@@ -19,6 +19,15 @@ class CreateReservationAction
   public function execute(array $data): Reservation
   {
     return DB::transaction(function () use ($data) {
+      // Case 0: Event already scheduled for that date
+      $eventAlreadyScheduled = Reservation::where('event_id', $data['event_id'])
+        ->where('event_date', $data['event_date'])
+        ->where('status', ReservationStatus::ACTIVE->value)
+        ->exists();
+
+      if ($eventAlreadyScheduled) {
+        throw new \RuntimeException('Conflict: this event is already scheduled on the selected date.');
+      }
 
       $conflict = Reservation::where('room_id', $data['room_id'])
         ->where('event_date', $data['event_date'])
