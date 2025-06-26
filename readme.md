@@ -163,8 +163,8 @@ Follow these steps to set up the project locally:
 ### 1️⃣ Clone the repository
 
 ```bash
-git clone https://github.com/your-username/your-repo.git
-cd your-repo
+git clone https://github.com/ManuDev14/EventsApp.git
+cd EventsApp
 ```
 
 ### 2️⃣ Install Laravel dependencies
