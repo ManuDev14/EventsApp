@@ -40,7 +40,6 @@ function submit() {
         onError: (errors) => {
             console.log(`Error ${errors}`);
 
-            // Mostrar todos los errores como toasts individuales
             Object.values(errors).forEach((message) => {
                 toast.error(String(message), {
                     position: 'top-right',
