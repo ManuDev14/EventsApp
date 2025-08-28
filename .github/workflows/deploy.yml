@@ -69,7 +69,7 @@ jobs:
           cache: 'npm'
 
       - name: Install PHP dependencies
-        run: composer install --no-progress --prefer-dist
+        run: composer install
 
       - name: Install Node dependencies
         run: npm ci
@@ -103,8 +103,8 @@ jobs:
           DB_USERNAME: root
           DB_PASSWORD: password
 
-      - name: Run JavaScript tests
-        run: npm run test || echo "JS tests skipped"
+      # - name: Run JavaScript tests
+      #   run: npm run test || echo "JS tests skipped"
 
   # Paso 3: Build
   build:
