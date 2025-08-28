@@ -20,7 +20,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '22'
           cache: 'npm'
 
       - name: Install dependencies
@@ -65,7 +65,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '22'
           cache: 'npm'
 
       - name: Install PHP dependencies
@@ -82,7 +82,7 @@ jobs:
       - name: Configure test database
         run: |
           php artisan config:cache
-          php artisan migrate --force
+          php artisan migrate:refresh
         env:
           DB_CONNECTION: mysql
           DB_HOST: 127.0.0.1
@@ -92,7 +92,7 @@ jobs:
           DB_PASSWORD: password
 
       - name: Run PHP tests
-        run: php artisan test
+        run: php artisan test --coverage
 
       # - name: Run JavaScript tests
       #   run: npm run test || echo "JS tests skipped"
