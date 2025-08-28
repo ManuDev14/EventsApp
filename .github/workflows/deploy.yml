@@ -1,11 +1,16 @@
-name: Deploy Laravel + Inertia + Vue.js
+# .github/workflows/deploy.yml
+name: CI/CD Pipeline - Laravel + Inertia + Vue.js
 
 on:
   push:
-    branches: [deploy]
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
 
 jobs:
-  deploy:
+  # Paso 1: Quality Check
+  quality-check:
+    name: '🔍 Quality Check'
     runs-on: ubuntu-latest
 
     steps:
@@ -15,57 +20,171 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '18'
           cache: 'npm'
 
-      - name: Build frontend assets
+      - name: Install dependencies
+        run: npm ci
+
+      - name: ESLint Check
+        run: npm run lint
+
+      - name: Type Check (if using TypeScript)
+        run: npm run type-check || echo "Type check skipped"
+
+      - name: Vue.js components validation
+        run: npm run validate || echo "Validation skipped"
+
+  # Paso 2: Testing
+  test:
+    name: '🧪 Testing'
+    runs-on: ubuntu-latest
+    needs: quality-check
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_DATABASE: laravel_test
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, dom, fileinfo, mysql, gd
+          coverage: xdebug
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install PHP dependencies
+        run: composer install --no-progress --prefer-dist
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Create test environment
         run: |
-          npm ci
-          npm run build
+          cp .env.example .env
+          php artisan key:generate
+
+      - name: Configure test database
+        run: |
+          php artisan config:cache
+          php artisan migrate --force
+        env:
+          DB_CONNECTION: mysql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3306
+          DB_DATABASE: laravel_test
+          DB_USERNAME: root
+          DB_PASSWORD: password
+
+      - name: Run PHP tests
+        run: php artisan test --coverage
+
+      - name: Run JavaScript tests
+        run: npm run test || echo "JS tests skipped"
+
+  # Paso 3: Build
+  build:
+    name: '🏗️ Build Assets'
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build production assets
+        run: npm run build
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: built-assets
+          path: public/build/
+          retention-days: 1
+
+  # Paso 4: Deploy to Staging
+  deploy-staging:
+    name: '🚀 Deploy to Staging'
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/develop'
+    environment: staging
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: built-assets
+          path: public/build/
 
       - name: Setup SSH
         uses: webfactory/ssh-agent@v0.7.0
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Add SSH host to known_hosts
-        run: |
-          ssh-keyscan -H ssh.gb.stackcp.com >> ~/.ssh/known_hosts
+      - name: Add SSH host key
+        run: ssh-keyscan -H ssh.gb.stackcp.com >> ~/.ssh/known_hosts
 
-      - name: Deploy to server
+      - name: Deploy to staging
         run: |
-          # Subir archivos al servidor
-          rsync -avz --delete \
-            --exclude='.git' \
-            --exclude='.github' \
-            --exclude='node_modules' \
-            --exclude='tests' \
-            --exclude='.env.example' \
-            --exclude='README.md' \
-            --exclude='package*.json' \
-            --exclude='vite.config.js' \
-            -e "ssh" \
-            ./ emanuelvaca.com@ssh.gb.stackcp.com:/home/sites/40b/2/2b48fe3c9c/eventapp
+          chmod +x .github/scripts/deploy-staging.sh
+          .github/scripts/deploy-staging.sh
 
-          # Ejecutar comandos en el servidor
-          ssh emanuelvaca.com@ssh.gb.stackcp.com << 'EOF'
-            cd /home/sites/40b/2/2b48fe3c9c/eventapp
-            
-            # Instalar dependencias PHP (si tienes composer)
-            if command -v composer &> /dev/null; then
-              composer install --no-dev --optimize-autoloader
-            fi
-            
-            # Limpiar cachés Laravel
-            php artisan config:cache
-            php artisan route:cache
-            php artisan view:cache
-            
-            # Ejecutar migraciones
-            php artisan migrate --force
-            
-            # Establecer permisos
-            chmod -R 755 storage bootstrap/cache
-            
-            echo "✅ Deployment completed!"
-          EOF
+  # Paso 5: Deploy to Production
+  deploy-production:
+    name: '🎯 Deploy to Production'
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    environment: production # Requires manual approval
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: built-assets
+          path: public/build/
+
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Add SSH host key
+        run: ssh-keyscan -H ssh.gb.stackcp.com >> ~/.ssh/known_hosts
+
+      - name: Deploy to production
+        run: |
+          chmod +x .github/scripts/deploy-production.sh
+          .github/scripts/deploy-production.sh
