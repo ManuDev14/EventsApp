@@ -45,11 +45,11 @@ jobs:
             --exclude='package*.json' \
             --exclude='vite.config.js' \
             -e "ssh" \
-            ./ emanuelvaca.com@ssh.gb.stackcp.com:/eventapp
+            ./ emanuelvaca.com@ssh.gb.stackcp.com:/home/sites/40b/2/2b48fe3c9c/eventapp
 
           # Ejecutar comandos en el servidor
           ssh emanuelvaca.com@ssh.gb.stackcp.com << 'EOF'
-            cd /home/emanuelvaca.com/public_html
+            cd /home/sites/40b/2/2b48fe3c9c/eventapp
             
             # Instalar dependencias PHP (si tienes composer)
             if command -v composer &> /dev/null; then
