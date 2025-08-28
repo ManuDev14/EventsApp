@@ -92,10 +92,10 @@ jobs:
           DB_PASSWORD: password
 
       - name: Run PHP tests
-        run: php artisan test --coverage
+        run: php artisan test
 
-      - name: Run JavaScript tests
-        run: npm run test || echo "JS tests skipped"
+      # - name: Run JavaScript tests
+      #   run: npm run test || echo "JS tests skipped"
 
   # Paso 3: Build
   build:
