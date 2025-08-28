@@ -1,0 +1,71 @@
+name: Deploy Laravel + Inertia + Vue.js
+
+on:
+  push:
+    branches: [deploy]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Build frontend assets
+        run: |
+          npm ci
+          npm run build
+
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Add SSH host to known_hosts
+        run: |
+          ssh-keyscan -H ssh.gb.stackcp.com >> ~/.ssh/known_hosts
+
+      - name: Deploy to server
+        run: |
+          # Subir archivos al servidor
+          rsync -avz --delete \
+            --exclude='.git' \
+            --exclude='.github' \
+            --exclude='node_modules' \
+            --exclude='tests' \
+            --exclude='.env.example' \
+            --exclude='README.md' \
+            --exclude='package*.json' \
+            --exclude='vite.config.js' \
+            -e "ssh" \
+            ./ emanuelvaca.com@ssh.gb.stackcp.com:/eventapp
+
+          # Ejecutar comandos en el servidor
+          ssh emanuelvaca.com@ssh.gb.stackcp.com << 'EOF'
+            cd /home/emanuelvaca.com/public_html
+            
+            # Instalar dependencias PHP (si tienes composer)
+            if command -v composer &> /dev/null; then
+              composer install --no-dev --optimize-autoloader
+            fi
+            
+            # Limpiar cachés Laravel
+            php artisan config:cache
+            php artisan route:cache
+            php artisan view:cache
+            
+            # Ejecutar migraciones
+            php artisan migrate --force
+            
+            # Establecer permisos
+            chmod -R 755 storage bootstrap/cache
+            
+            echo "✅ Deployment completed!"
+          EOF
