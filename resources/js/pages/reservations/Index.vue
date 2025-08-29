@@ -55,6 +55,8 @@ watch(selectedStatus, (value) => {
             </div>
         </div>
 
-        <ReservationTable :reservations="reservations" />
+        <div class="mx-5">
+            <ReservationTable :reservations="reservations" />
+        </div>
     </AppLayout>
 </template>
