@@ -27,7 +27,6 @@ rsync -avz --delete \
   --exclude='.github' \
   --exclude='node_modules' \
   --exclude='tests' \
-  --exclude='.env.example' \
   --exclude='README.md' \
   --exclude='package*.json' \
   --exclude='vite.config.js' \
@@ -47,7 +46,7 @@ echo "⚙️ Setting up production environment..."
 # Install/update Composer dependencies (if available)
 if command -v composer &> /dev/null; then
   echo "📦 Installing PHP dependencies..."
-  php8.3 /usr/local/bin/composer install --no-dev --optimize-autoloader --no-interaction
+  php83 /usr/local/bin/composer install --no-dev --optimize-autoloader --no-interaction
 else
   echo "⚠️ Composer not found, using existing vendor directory"
 fi

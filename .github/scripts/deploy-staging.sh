@@ -18,7 +18,6 @@ rsync -avz --delete \
   --exclude='.github' \
   --exclude='node_modules' \
   --exclude='tests' \
-  --exclude='.env.example' \
   --exclude='README.md' \
   --exclude='package*.json' \
   --exclude='vite.config.js' \
@@ -30,13 +29,8 @@ rsync -avz --delete \
 ssh $SERVER << EOF
 cd $STAGING_DIR
 
-echo "⚙️ Setting up staging environment..."
-
-# Create .env for staging if doesn't exist
-
-
 # Install/update Composer dependencies 
-php8.3 /usr/local/bin/composer install --no-dev --optimize-autoloader --no-interaction
+php83 /usr/local/bin/composer install --no-dev --optimize-autoloader --no-interaction
 
 # Laravel optimizations
 echo "⚡ Running Laravel optimizations..."
@@ -46,7 +40,7 @@ php artisan view:cache
 
 # Run migrations
 echo "🔄 Running migrations..."
-php artisan migrate --force
+php artisan migrate
 
 # Set permissions
 echo "🔐 Setting permissions..."
