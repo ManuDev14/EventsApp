@@ -8,7 +8,7 @@ on:
 jobs:
   # Paso 1: Build para Deploy
   build:
-    name: '🏗️ Build Assets for Deploy'
+    name: 'Build Assets for Deploy'
     runs-on: ubuntu-latest
 
     steps:
@@ -36,7 +36,7 @@ jobs:
 
   # Paso 2: Deploy to Staging
   deploy-staging:
-    name: '🚀 Deploy to Staging'
+    name: 'Deploy to Staging'
     runs-on: ubuntu-latest
     needs: build
     if: github.ref == 'refs/heads/develop'
@@ -67,7 +67,7 @@ jobs:
 
   # Paso 3: Deploy to Production
   deploy-production:
-    name: '🎯 Deploy to Production'
+    name: 'Deploy to Production'
     runs-on: ubuntu-latest
     needs: build
     if: github.ref == 'refs/heads/main'
