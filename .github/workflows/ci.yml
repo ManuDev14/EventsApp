@@ -8,7 +8,7 @@ on:
 jobs:
   # Paso 1: Quality Check
   quality-check:
-    name: '🔍 Quality Check'
+    name: 'Quality Check'
     runs-on: ubuntu-latest
 
     steps:
@@ -35,7 +35,7 @@ jobs:
 
   # Paso 2: Testing
   test:
-    name: '🧪 Testing'
+    name: 'Testing'
     runs-on: ubuntu-latest
     needs: quality-check
 
@@ -106,7 +106,7 @@ jobs:
 
   # Paso 3: Build (solo para validar que compila)
   build:
-    name: '🏗️ Build Validation'
+    name: 'Build Validation'
     runs-on: ubuntu-latest
     needs: test
 

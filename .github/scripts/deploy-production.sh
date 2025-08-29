@@ -3,7 +3,7 @@
 
 set -e  # Exit on error
 
-echo "🎯 Starting production deployment..."
+echo "Starting production deployment..."
 
 APP_DIR="/home/sites/40b/2/2b48fe3c9c/public_html/eventapp"
 # BACKUP_DIR="/home/sites/40b/2/2b48fe3c9c/backups"
@@ -11,12 +11,12 @@ SERVER="emanuelvaca.com@ssh.gb.stackcp.com"
 DATE=$(date +%Y%m%d_%H%M%S)
 
 # Create backup before deployment
-# echo "📦 Creating backup..."
+# echo "Creating backup..."
 # ssh $SERVER "
 #   mkdir -p $BACKUP_DIR
 #   if [ -d '$APP_DIR' ]; then
 #     tar -czf '$BACKUP_DIR/backup_$DATE.tar.gz' -C '$APP_DIR' . 2>/dev/null || echo 'Backup created with warnings'
-#     echo '✅ Backup created: backup_$DATE.tar.gz'
+#     echo 'Backup created: backup_$DATE.tar.gz'
 #   fi
 # "
 
@@ -53,10 +53,10 @@ echo "⚙️ Setting up production environment..."
 
 # Install/update Composer dependencies (if available)
 if command -v composer &> /dev/null; then
-  echo "📦 Installing PHP dependencies..."
+  echo "Installing PHP dependencies..."
   php83 /usr/local/bin/composer install
 else
-  echo "⚠️ Composer not found, using existing vendor directory"
+  echo "Composer not found, using existing vendor directory"
 fi
 
 # Laravel optimizations for production
@@ -66,11 +66,11 @@ php artisan route:cache
 php artisan view:cache
 
 # Run migrations
-echo "🔄 Running database migrations..."
+echo "Running database migrations..."
 php artisan migrate
 
 # Set proper permissions
-echo "🔐 Setting permissions..."
+echo "Setting permissions..."
 chmod -R 755 storage bootstrap/cache 2>/dev/null || echo "Permission setting completed"
 
 # Generate app key if needed
@@ -79,14 +79,14 @@ if ! grep -q "APP_KEY=base64:" .env; then
 fi
 
 # Warm up cache
-echo "🔥 Warming up application..."
+echo "Warming up application..."
 php artisan cache:clear
 php artisan config:cache
 
-echo "✅ Disabling maintenance mode..."
+echo "Disabling maintenance mode..."
 php artisan up
 
-echo "🚀 Production deployment completed successfully!"
+echo "Production deployment completed successfully!"
 EOF
 
 # Verify deployment

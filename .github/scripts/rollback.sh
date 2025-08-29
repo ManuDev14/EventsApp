@@ -3,7 +3,7 @@
 
 set -e
 
-echo "🔄 Starting rollback process..."
+echo "Starting rollback process..."
 
 APP_DIR="/home/emanuelvaca.com/public_html"
 BACKUP_DIR="/home/emanuelvaca.com/backups"
@@ -13,30 +13,30 @@ SERVER="emanuelvaca.com@ssh.gb.stackcp.com"
 LATEST_BACKUP=$(ssh $SERVER "ls -t $BACKUP_DIR/backup_*.tar.gz | head -1")
 
 if [ -z "$LATEST_BACKUP" ]; then
-  echo "❌ No backup found for rollback"
+  echo "No backup found for rollback"
   exit 1
 fi
 
-echo "📦 Rolling back to: $LATEST_BACKUP"
+echo "Rolling back to: $LATEST_BACKUP"
 
 ssh $SERVER << EOF
 cd $APP_DIR
 
-echo "🔧 Enabling maintenance mode..."
+echo "Enabling maintenance mode..."
 php artisan down --retry=60
 
-echo "📤 Restoring from backup..."
+echo "Restoring from backup..."
 tar -xzf $LATEST_BACKUP
 
-echo "⚙️ Running post-rollback commands..."
+echo "Running post-rollback commands..."
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 
-echo "✅ Disabling maintenance mode..."
+echo "Disabling maintenance mode..."
 php artisan up
 
-echo "🎉 Rollback completed successfully!"
+echo "Rollback completed successfully!"
 EOF
 
-echo "✅ Rollback finished!"
+echo "Rollback finished!"
