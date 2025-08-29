@@ -6,19 +6,19 @@ set -e  # Exit on error
 echo "🎯 Starting production deployment..."
 
 APP_DIR="/home/sites/40b/2/2b48fe3c9c/public_html/eventapp"
-BACKUP_DIR="/home/sites/40b/2/2b48fe3c9c/backups"
+# BACKUP_DIR="/home/sites/40b/2/2b48fe3c9c/backups"
 SERVER="emanuelvaca.com@ssh.gb.stackcp.com"
 DATE=$(date +%Y%m%d_%H%M%S)
 
 # Create backup before deployment
-echo "📦 Creating backup..."
-ssh $SERVER "
-  mkdir -p $BACKUP_DIR
-  if [ -d '$APP_DIR' ]; then
-    tar -czf '$BACKUP_DIR/backup_$DATE.tar.gz' -C '$APP_DIR' . 2>/dev/null || echo 'Backup created with warnings'
-    echo '✅ Backup created: backup_$DATE.tar.gz'
-  fi
-"
+# echo "📦 Creating backup..."
+# ssh $SERVER "
+#   mkdir -p $BACKUP_DIR
+#   if [ -d '$APP_DIR' ]; then
+#     tar -czf '$BACKUP_DIR/backup_$DATE.tar.gz' -C '$APP_DIR' . 2>/dev/null || echo 'Backup created with warnings'
+#     echo '✅ Backup created: backup_$DATE.tar.gz'
+#   fi
+# "
 
 # Upload files to production
 echo "📤 Uploading files to production..."
