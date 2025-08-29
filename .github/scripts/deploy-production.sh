@@ -5,7 +5,7 @@ set -e  # Exit on error
 
 echo "🎯 Starting production deployment..."
 
-APP_DIR="/home/emanuelvaca.com/public_html"
+APP_DIR="/home/sites/40b/2/2b48fe3c9c/public_html/eventapp"
 BACKUP_DIR="/home/sites/40b/2/2b48fe3c9c/backups"
 SERVER="emanuelvaca.com@ssh.gb.stackcp.com"
 DATE=$(date +%Y%m%d_%H%M%S)
@@ -27,7 +27,14 @@ rsync -avz --delete \
   --exclude='.github' \
   --exclude='node_modules' \
   --exclude='tests' \
+  --exclude='.env' \
   --exclude='.env.example' \
+  --exclude='.env.*' \
+  --exclude='storage/app/*' \
+  --exclude='storage/logs/*' \
+  --exclude='storage/framework/cache/*' \
+  --exclude='storage/framework/sessions/*' \
+  --exclude='storage/framework/views/*' \
   --exclude='README.md' \
   --exclude='package*.json' \
   --exclude='vite.config.js' \
@@ -47,7 +54,7 @@ echo "⚙️ Setting up production environment..."
 # Install/update Composer dependencies (if available)
 if command -v composer &> /dev/null; then
   echo "📦 Installing PHP dependencies..."
-  php8.3 /usr/local/bin/composer install --no-dev --optimize-autoloader --no-interaction
+  php83 /usr/local/bin/composer install
 else
   echo "⚠️ Composer not found, using existing vendor directory"
 fi
@@ -60,7 +67,7 @@ php artisan view:cache
 
 # Run migrations
 echo "🔄 Running database migrations..."
-php artisan migrate --force
+php artisan migrate
 
 # Set proper permissions
 echo "🔐 Setting permissions..."
