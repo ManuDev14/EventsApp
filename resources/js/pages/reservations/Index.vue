@@ -47,7 +47,7 @@ watch(selectedStatus, (value) => {
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="mx-2 my-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <h1 class="text-2xl font-bold">Reservations</h1>
+            <h1 class="text-2xl font-bold">Reservations 📚</h1>
             <Filters v-model="selectedStatus" :status="selectedStatus" :options="statusOptions" />
             <div class="flex flex-col gap-2 md:flex-row md:items-center md:gap-4">
                 <CreateReservationModal :events="events" :rooms="rooms" />
