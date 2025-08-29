@@ -1,11 +1,12 @@
-# .github/workflows/deploy.yml
-name: CI/CD Pipeline - Laravel + Inertia + Vue.js
+# .github/workflows/ci.yml
+name: CI - Quality Check & Testing
 
 on:
   push:
     branches: [main, develop]
   pull_request:
     branches: [main]
+    types: [opened, synchronize, reopened]
 
 jobs:
   # Paso 1: Quality Check
@@ -106,12 +107,11 @@ jobs:
       # - name: Run JavaScript tests
       #   run: npm run test || echo "JS tests skipped"
 
-  # Paso 3: Build
+  # Paso 3: Build (solo para validar que compila)
   build:
-    name: '🏗️ Build Assets'
+    name: '🏗️ Build Validation'
     runs-on: ubuntu-latest
     needs: test
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
 
     steps:
       - name: Checkout code
@@ -126,74 +126,5 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build production assets
+      - name: Build assets (validation only)
         run: npm run build
-
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: built-assets
-          path: public/build/
-          retention-days: 1
-
-  # Paso 4: Deploy to Staging
-  deploy-staging:
-    name: '🚀 Deploy to Staging'
-    runs-on: ubuntu-latest
-    needs: build
-    if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
-    environment: staging
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: built-assets
-          path: public/build/
-
-      - name: Setup SSH
-        uses: webfactory/ssh-agent@v0.7.0
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-
-      - name: Add SSH host key
-        run: ssh-keyscan -H ssh.gb.stackcp.com >> ~/.ssh/known_hosts
-
-      - name: Deploy to staging
-        run: |
-          chmod +x .github/scripts/deploy-staging.sh
-          .github/scripts/deploy-staging.sh
-
-  # Paso 5: Deploy to Production
-  deploy-production:
-    name: '🎯 Deploy to Production'
-    runs-on: ubuntu-latest
-    needs: build
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    environment: production # Requires manual approval
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: built-assets
-          path: public/build/
-
-      - name: Setup SSH
-        uses: webfactory/ssh-agent@v0.7.0
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-
-      - name: Add SSH host key
-        run: ssh-keyscan -H ssh.gb.stackcp.com >> ~/.ssh/known_hosts
-
-      - name: Deploy to production
-        run: |
-          chmod +x .github/scripts/deploy-production.sh
-          .github/scripts/deploy-production.sh
