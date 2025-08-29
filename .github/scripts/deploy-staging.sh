@@ -38,7 +38,7 @@ ssh $SERVER << EOF
 cd $STAGING_DIR
 
 # Install/update Composer dependencies 
-php83 /usr/local/bin/composer install --no-dev --optimize-autoloader --no-interaction
+php83 /usr/local/bin/composer install
 
 # Laravel optimizations
 echo "⚡ Running Laravel optimizations..."
