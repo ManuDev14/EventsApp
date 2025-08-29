@@ -4,9 +4,6 @@ name: CI - Quality Check & Testing
 on:
   push:
     branches: [main, develop]
-  pull_request:
-    branches: [main]
-    types: [opened, synchronize, reopened]
 
 jobs:
   # Paso 1: Quality Check
