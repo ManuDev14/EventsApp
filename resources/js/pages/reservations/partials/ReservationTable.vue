@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import Pagination from '@/components/common/Pagination.vue';
+import Button from '@/components/ui/button/Button.vue';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Reservation } from '@/models/Reservation';
 
@@ -16,6 +17,7 @@ defineProps<{ reservations: { data: Reservation[]; links: any[]; total: number }
                 <TableHead>End Time</TableHead>
                 <TableHead>Date</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead>Actions</TableHead>
             </TableRow>
         </TableHeader>
         <TableBody>
@@ -26,6 +28,9 @@ defineProps<{ reservations: { data: Reservation[]; links: any[]; total: number }
                 <TableCell>{{ reservation.end_time }}</TableCell>
                 <TableCell>{{ reservation.event_date_human }}</TableCell>
                 <TableCell>{{ reservation.status }}</TableCell>
+                <TableCell>
+                    <Button>Editar</Button>
+                </TableCell>
             </TableRow>
         </TableBody>
     </Table>
