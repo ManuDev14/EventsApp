@@ -5,7 +5,7 @@ set -e  # Exit on error
 
 echo "🎯 Starting production deployment..."
 
-APP_DIR="/home/emanuelvaca.com/public_html"
+APP_DIR="/home/sites/40b/2/2b48fe3c9c/public_html/eventapp"
 BACKUP_DIR="/home/sites/40b/2/2b48fe3c9c/backups"
 SERVER="emanuelvaca.com@ssh.gb.stackcp.com"
 DATE=$(date +%Y%m%d_%H%M%S)
@@ -60,7 +60,7 @@ php artisan view:cache
 
 # Run migrations
 echo "🔄 Running database migrations..."
-php artisan migrate --force
+php artisan migrate
 
 # Set proper permissions
 echo "🔐 Setting permissions..."
