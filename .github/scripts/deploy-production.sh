@@ -47,7 +47,7 @@ echo "⚙️ Setting up production environment..."
 # Install/update Composer dependencies (if available)
 if command -v composer &> /dev/null; then
   echo "📦 Installing PHP dependencies..."
-  composer install --no-dev --optimize-autoloader --no-interaction
+  php8.3 /usr/local/bin/composer install --no-dev --optimize-autoloader --no-interaction
 else
   echo "⚠️ Composer not found, using existing vendor directory"
 fi

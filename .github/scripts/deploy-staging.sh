@@ -39,7 +39,7 @@ if [ ! -f .env ]; then
 fi
 
 # Install/update Composer dependencies 
-composer install --no-dev --optimize-autoloader --no-interaction
+php8.3 /usr/local/bin/composer install --no-dev --optimize-autoloader --no-interaction
 
 # Laravel optimizations
 echo "⚡ Running Laravel optimizations..."
