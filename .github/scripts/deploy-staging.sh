@@ -38,13 +38,8 @@ if [ ! -f .env ]; then
   echo "📝 Please configure .env file for staging"
 fi
 
-# Install/update Composer dependencies (if available)
-if command -v composer &> /dev/null; then
-  echo "📦 Installing PHP dependencies..."
-  composer install --no-dev --optimize-autoloader --no-interaction
-else
-  echo "⚠️ Composer not found, using existing vendor directory"
-fi
+# Install/update Composer dependencies 
+composer install --no-dev --optimize-autoloader --no-interaction
 
 # Laravel optimizations
 echo "⚡ Running Laravel optimizations..."
