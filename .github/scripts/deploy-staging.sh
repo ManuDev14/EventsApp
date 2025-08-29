@@ -18,6 +18,14 @@ rsync -avz --delete \
   --exclude='.github' \
   --exclude='node_modules' \
   --exclude='tests' \
+  --exclude='.env' \
+  --exclude='.env.example' \
+  --exclude='.env.*' \
+  --exclude='storage/app/*' \
+  --exclude='storage/logs/*' \
+  --exclude='storage/framework/cache/*' \
+  --exclude='storage/framework/sessions/*' \
+  --exclude='storage/framework/views/*' \
   --exclude='README.md' \
   --exclude='package*.json' \
   --exclude='vite.config.js' \
