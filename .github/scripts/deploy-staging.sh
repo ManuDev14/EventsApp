@@ -33,10 +33,7 @@ cd $STAGING_DIR
 echo "⚙️ Setting up staging environment..."
 
 # Create .env for staging if doesn't exist
-if [ ! -f .env ]; then
-  cp .env.example .env
-  echo "📝 Please configure .env file for staging"
-fi
+
 
 # Install/update Composer dependencies 
 php8.3 /usr/local/bin/composer install --no-dev --optimize-autoloader --no-interaction
